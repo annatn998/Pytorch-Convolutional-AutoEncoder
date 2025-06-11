@@ -37,4 +37,25 @@ Alternatively, if a `requirements.txt` is provided, install everything via:
 `pip install -r requirements.txt`
 
 Contents of `requirements.txt` (if using):
+torch
+torchvision
+matplotlib
+numpy
+
+
+
+
+## 🚀 Running the Autoencoder
+
+After setting up the environment and downloading the dataset, you can train the model using:
+
+`python main.py`
+
+If your `main.py` script supports command-line arguments, you can customize training:
+
+`python main.py --epochs 50 --batch_size 128 --learning_rate 0.001`
+
+After training, the autoencoder will attempt to reconstruct the input images. Inputs with poor reconstructions (i.e., high reconstruction error) are considered anomalous. You can visualize the loss or outputs saved to an `outputs/` folder, if implemented.
+
+
 
