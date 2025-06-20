@@ -2,6 +2,7 @@ import numpy as np
 import random
 from preparatory_functions import *
 from training_functions import *
+from error_functions import *
 from autoencoder import AutoEncoder
 import torch
 import torch.nn as nn 
@@ -27,3 +28,6 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 training_outputs = training_loop(epochs=10, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
 predictions = eval_loop(model=model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=model, data_loader=data_loaders_anomaly)
+latent_space_predictions = eval_loop(model=model.latent_space_image, data_loader=data_loaders)
+average_recond_error, average_density, stdev_recon_error, stdev_density = calc_density_and_recon_error(dataloader=data_loaders, model=model, latent_space_images=latent_space_predictions)
+average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, model=model, latent_space_images=latent_space_predictions)
