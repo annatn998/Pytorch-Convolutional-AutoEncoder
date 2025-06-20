@@ -8,7 +8,7 @@ def calc_density_and_recon_error(dataloader, model, latent_space_images):
     args:
         dataloader (DataLoader): data loader for pytorch model
         model (AutoEncoder): pytorch model
-        latent_space_images (list): list of latent space images
+        latent_space_images (list): list of latent space images (just used to calculate the shape for the density model)
     return: 
         average_recond_error (float): average reconstruction error
         average_density (float): average density
@@ -41,4 +41,4 @@ def calc_density_and_recon_error(dataloader, model, latent_space_images):
     stdev_recon_error = np.std(np.array(recon_error_list))
     stdev_density = np.std(np.array(density_list))
 
-    return average_recond_error, average_density, stdev_recon_error, stdev_density
+    return average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list 

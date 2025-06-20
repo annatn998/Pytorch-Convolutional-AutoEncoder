@@ -29,5 +29,13 @@ training_outputs = training_loop(epochs=10, data_loader=data_loaders, model=mode
 predictions = eval_loop(model=model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=model, data_loader=data_loaders_anomaly)
 latent_space_predictions = eval_loop(model=model.latent_space_image, data_loader=data_loaders)
-average_recond_error, average_density, stdev_recon_error, stdev_density = calc_density_and_recon_error(dataloader=data_loaders, model=model, latent_space_images=latent_space_predictions)
-average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, model=model, latent_space_images=latent_space_predictions)
+average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list = calc_density_and_recon_error(dataloader=data_loaders, 
+                                                                                                                                       model=model, 
+                                                                                                                                       latent_space_images=latent_space_predictions)
+average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly, density_list_anomaly, recon_error_list_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, 
+                                                                                                                                                                                       model=model, 
+                                                                                                                                                                                       latent_space_images=latent_space_predictions)
+print(average_recond_error)
+print(average_recond_error_anomaly)
+
+# next steps is to create the for-loop and show the accuracy of the images if they've been detected as anomally or not 
