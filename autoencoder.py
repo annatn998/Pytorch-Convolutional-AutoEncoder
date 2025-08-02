@@ -12,19 +12,19 @@ class AutoEncoder(nn.Module):
         self.channels = channels 
 
         self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels=self.channels, out_channels=16, kernel_size=3 padding=1),
-            nn.Relu(),
-            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3 padding=1),
-            nn.Relu(),
-            nn.Conv2d(inchannels=32, out_channels=64, kernel_size=3, padding=1)
+            nn.Conv2d(in_channels=self.channels, out_channels=16, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTransposed2d(in_channels=64, out_channels=32, kernel_size=3, padding=1),
-            nn.Relu(),
-            nn.ConvTransposed2d(in_channels=32, out_channels=16, kernel_size=3, padding=1),
-            nn.Relu(),
-            nn.ConvTransposed2d(in_channels=16, out_channels=self.channels, kernel_size=3, padding=1)
+            nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.ConvTranspose2d(in_channels=16, out_channels=self.channels, kernel_size=3, padding=1),
             nn.Sigmoid()
         )
 

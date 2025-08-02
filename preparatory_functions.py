@@ -37,7 +37,7 @@ def transform_background_colors(imgs):
     return: 
         mask (list): transformed images
     """
-    mask = np.array([np.array([[0,0,0]] * 64) * 64] for i in range(0, len(imgs) + 1))
+    mask = np.array([np.zeros((64, 64, 3), dtype=int) for i in range(0, len(imgs) + 1)])
     rbgs = {
         'dark_pink': [139, 0, 139],
         'dark_yellow': [139, 139, 0],
@@ -53,7 +53,7 @@ def transform_background_colors(imgs):
                 if imval == 0: 
                     mask[index][index2][index3] = random_background
                 if imval != 0: 
-                    mask[index][index2][index3] = rbgs['255, 255, 255']
+                    mask[index][index2][index3] = [255, 255, 255]
     return mask
 
 def create_anomalous_dataset(img, show=False):
@@ -66,11 +66,11 @@ def create_anomalous_dataset(img, show=False):
         anomalous_img (array): transformed image
     """
     rbgs = {
-        'dark_pink': [139, 0, 139],
-        'dark_yellow': [139, 139, 0],
-        'dark_blue': [0, 0, 139],
-        'dark_green': [0, 100, 0],
-        'black': [0, 0, 0]
+        'dark_pink': (139, 0, 139),
+        'dark_yellow': (139, 139, 0),
+        'dark_blue': (0, 0, 139),
+        'dark_green': (0, 100, 0),
+        'black': (0, 0, 0)
     }
     random_y = random.randint(0, 32)
     random_x = random.randint(0, 32)

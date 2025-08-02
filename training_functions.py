@@ -46,24 +46,28 @@ def training_loop(epochs, data_loader, model, criterion, optimizer, verbose: boo
         if verbose:
             print(f"Epoch {e} loss: {loss}")
 
-    return outputs
+    return outputs, model
 
-def eval_loop(model, data_loader):
+def eval_loop(model, data_loader, latent_space=False):
     """
     function: evaluation loop for pytorch model
     args:
         model (AutoEncoder): train pytorch model
         data_loader (DataLoader): data loader for pytorch model
+        latent_space (bool): using just the latent space of the model to predict
     return: 
         predictions (list): list of predictions
     """
+
+    print("Type of trained_model:", type(model))
 
     model.eval()
     predictions = []
 
     with torch.no_grad():
         for img in data_loader:
-            preds = model(img)
+            if latent_space: preds = model.latent_space_image(img)
+            else: preds = model(img)
             predictions.append(preds)
     return predictions 
 

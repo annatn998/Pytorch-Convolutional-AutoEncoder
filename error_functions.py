@@ -1,6 +1,6 @@
 import numpy as np
 import torch.nn.functional as F
-from sklearn.neightbors import KernelDensity
+from sklearn.neighbors import KernelDensity
 
 def calc_density_and_recon_error(dataloader, model, latent_space_images):
     """
@@ -21,9 +21,9 @@ def calc_density_and_recon_error(dataloader, model, latent_space_images):
     recon_error_list = []
 
     for img in dataloader:
-        encoded_img = model.latent_space_img(img) # create a compressed version of the image using encoder
+        encoded_img = model.latent_space_image(img) # create a compressed version of the image using encoder
         # flatten the encoded image (latent space)
-        encoded_img = np.array(imgs.reshape(-1).detach().numpy() for imgs in encoded_img)
+        encoded_img = np.array([imgs.reshape(-1).detach().numpy() for imgs in encoded_img])
 
         ## flatten the original input image
         density = kde.score_samples(encoded_img)[0]
