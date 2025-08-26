@@ -59,8 +59,6 @@ def eval_loop(model, data_loader, latent_space=False):
         predictions (list): list of predictions
     """
 
-    print("Type of trained_model:", type(model))
-
     model.eval()
     predictions = []
 

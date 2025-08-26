@@ -6,10 +6,13 @@ from error_functions import *
 from autoencoder import AutoEncoder
 import torch
 import torch.nn as nn 
-import torch.nn.functional as F
 import logging
-
-
+import gc
+# erase disk memory so we re-train the same each time 
+gc.collect()
+seed = 100
+torch.manual_seed(seed)
+logging.basicConfig(level=logging.INFO)
 
 # load & sample data
 logging.info('loading dataset ....')
@@ -71,5 +74,8 @@ for error in recon_error_list:
         normal_image_detected += 1
 
 
-
+logging.info(f'true positives {normal_image_detected}')
+logging.info(f'false negatives {normal_image_missed}')
+logging.info(f'true negative {anomalies_detected}')
+logging.info(f'false positive {anomalies_missed}')
 
