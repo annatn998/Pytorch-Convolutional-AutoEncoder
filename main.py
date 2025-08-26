@@ -53,7 +53,7 @@ logging.info(f'average reconstruction error for anomalous images: {average_recon
 correct = 0
 incorrect = 0 
 index = 0
-error_interval = 0.001
+error_interval = 0.0001
 
 anomalies_detected = 0
 anomalies_missed = 0

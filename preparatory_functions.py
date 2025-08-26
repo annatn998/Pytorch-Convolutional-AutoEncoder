@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random 
 from PIL import Image, ImageDraw
+import torch 
 
 def show_images_grid(imgs, num_images=25, title=None):
     """
@@ -11,20 +12,26 @@ def show_images_grid(imgs, num_images=25, title=None):
         num_images (int): number of images to show
         title (str): title of the plot
     """
-    ncols = int(np.ciel(num_images**0.5))
+
+    if isinstance(imgs[0], torch.Tensor):
+        print(len(imgs))
+        imgs = [img[0].detach().cpu().numpy().transpose(1,2,0) for img in imgs]
+        
+
+    ncols = int(np.ceil(num_images**0.5))
     nrows = int(np.ceil(num_images/ncols))
     _, axes = plt.subplots(nrows, ncols, figsize=(nrows*3, ncols*3))
     if num_images > 1:
-        ax = ax.flatten()
+        axes = axes.flatten()
         for ax_i, ax in enumerate(axes): 
             if ax_i < num_images: 
-                ax.show(imgs[ax_i], cmap='Greys_r', interpolation='nearest')
+                ax.imshow(imgs[ax_i], cmap='Greys_r', interpolation='nearest')
                 ax.set_xticks([])
                 ax.set_yticks([])
             else:
                 ax.axis('off')
     else:
-        ax.show(imgs[0], cmap='Greys_r', interpolation='nearest')
+        ax.imshow(imgs[0], cmap='Greys_r', interpolation='nearest')
     if title:
         plt.title(title)
 
