@@ -16,17 +16,18 @@ class AutoEncoder(nn.Module):
             nn.ReLU(),
             nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, padding=1, stride=2),
             nn.ReLU(),
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1, stride=2)
+            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1, stride=2),
         )
 
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=3, padding=1, stride=2),
+            nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1),  # 8 -> 16
             nn.ReLU(),
-            nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=3, padding=1, stride=2),
+            nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1),  # 16 -> 32
             nn.ReLU(),
-            nn.ConvTranspose2d(in_channels=16, out_channels=self.channels, kernel_size=3, padding=1, stride=2),
+            nn.ConvTranspose2d(16, self.channels, kernel_size=4, stride=2, padding=1),  # 32 -> 64
             nn.Sigmoid()
         )
+
 
     def forward(self, x): 
         encoded = self.encoder(x)
