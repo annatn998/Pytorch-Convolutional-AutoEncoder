@@ -81,7 +81,7 @@ def create_anomalous_dataset(img, show=False):
     }
     random_y = random.randint(0, 32)
     random_x = random.randint(0, 32)
-    random_dot_radius = random.randint(1,3)
+    random_dot_radius = random.randint(10,10)
     random_color = random.choice(['dark_pink', 'dark_yellow', 'dark_blue', 'dark_green', 'black'])
 
     # turn into an image object for easier editing 

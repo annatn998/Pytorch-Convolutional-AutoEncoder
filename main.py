@@ -33,20 +33,44 @@ data_loaders_anomaly = torch.utils.data.DataLoader(transformed_anomaly_images, b
 logging.info('preparing model parameters ...')
 model = AutoEncoder(channels=3)
 criterion = nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 logging.info('Training start!')
-training_outputs, trained_model = training_loop(epochs=1, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
+
+training_outputs, trained_model = training_loop(epochs=5, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
 predictions = eval_loop(model=trained_model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=trained_model, data_loader=data_loaders_anomaly)
 latent_space_predictions = eval_loop(model=trained_model, data_loader=data_loaders, latent_space=True)
 average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list = calc_density_and_recon_error(dataloader=data_loaders, 
                                                                                                                                        model=trained_model, 
                                                                                                                                        latent_space_images=latent_space_predictions)
-average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly, density_list_anomaly, recon_error_list_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, 
-                                                                                                                                                                                       model=trained_model, 
-                                                                                                                                                                                       latent_space_images=latent_space_predictions)
-logging.info(f'average reconstruction error for images: {average_recond_error}')
+
+different_heights = np.arange(0.1, 1, 0.1)
+kde_results = {}
+for h in different_heights:
+    average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list = calc_density_and_recon_error(dataloader=data_loaders, 
+                                                                                                                                       model=trained_model, 
+                                                                                                                                       latent_space_images=latent_space_predictions,
+                                                                                                                                       height=h)
+    average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly, density_list_anomaly, recon_error_list_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, 
+                                                                                                                                                                                           model=trained_model, 
+                                                                                                                                                                                           latent_space_images=latent_space_predictions,
+                                                                                                                                                                                           height=h)
+    
+    kde_results[f'height_{h}'] = {'average_recond_error_anomaly': average_recond_error_anomaly,
+                                  'average_density_anomaly': average_density_anomaly, 
+                                  'stdev_recon_error_anomaly': stdev_recon_error_anomaly,
+                                  'stdev_density_anomaly': stdev_density_anomaly,
+                                  'density_list_anomaly': density_list_anomaly, 
+                                  'recon_error_list_anomaly': recon_error_list_anomaly,
+                                  'average_recond_error': average_recond_error_anomaly,
+                                  'average_density': average_density_anomaly, 
+                                  'stdev_recon_error': stdev_recon_error_anomaly,
+                                  'stdev_density': stdev_density_anomaly,
+                                  'density_list': density_list_anomaly, 
+                                  'recon_error_list': recon_error_list_anomaly}
+
+logging.info(f'average reconstruction error for images: {average_recond_error}' )
 logging.info(f'average reconstruction error for anomalous images: {average_recond_error_anomaly}')
 
 # next steps is to create the for-loop and show the accuracy of the images if they've been detected as anomally or not 
@@ -55,27 +79,30 @@ incorrect = 0
 index = 0
 error_interval = 0.0001
 
-anomalies_detected = 0
-anomalies_missed = 0
-normal_image_detected = 0
-normal_image_missed = 0
+for h in different_heights:
+    anomalies_detected = 0
+    anomalies_missed = 0
+    normal_image_detected = 0
+    normal_image_missed = 0
+    # using the average reconstruction error for anomalies you can check whether or not it falls above or below the average error
+    for error in kde_results[f'height_{h}']['recon_error_list_anomaly']:
+        print(error, average_recond_error_anomaly)
+        if error >= average_recond_error_anomaly + error_interval:
+            anomalies_detected += 1
+        else: 
+            anomalies_missed += 1 
 
-# using the average reconstruction error for anomalies you can check whether or not it falls above or below the average error
-for error in recon_error_list_anomaly:
-    if error >= average_recond_error_anomaly - error_interval:
-        anomalies_detected += 1
-    else: 
-        anomalies_missed += 1 
+    for error in kde_results[f'height_{h}']['recon_error_list']:
+        if error >= average_recond_error_anomaly + error_interval:
+            normal_image_missed += 1 
+        else: 
+            normal_image_detected += 1
 
-for error in recon_error_list:
-    if error >= average_recond_error_anomaly - error_interval:
-        normal_image_missed += 1 
-    else: 
-        normal_image_detected += 1
+    # print(f'-----------------results for height {h}-------------------')
 
 
-logging.info(f'true positives {normal_image_detected}')
-logging.info(f'false negatives {normal_image_missed}')
-logging.info(f'true negative {anomalies_detected}')
-logging.info(f'false positive {anomalies_missed}')
+    logging.info(f'true positives {normal_image_detected}')
+    logging.info(f'false negatives {normal_image_missed}')
+    logging.info(f'true negative {anomalies_detected}')
+    logging.info(f'false positive {anomalies_missed}')
 

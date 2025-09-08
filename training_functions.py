@@ -36,7 +36,6 @@ def training_loop(epochs, data_loader, model, criterion, optimizer, verbose: boo
 
     for e in range(epochs): 
         for img in data_loader:
-            print(img.shape)
             img = img.float()
             recon = model(img)
             loss = criterion(recon, img)
