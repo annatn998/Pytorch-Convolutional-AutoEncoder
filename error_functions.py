@@ -36,7 +36,6 @@ def calc_density_and_recon_error(dataloader, model, latent_space_images, height)
         density = kde.score_samples(encoded_img)[0]            
         
         reconstruction_error = F.mse_loss(reconstruction, img, reduction='mean').item()
-
         density_list.append(density)
         recon_error_list.append(reconstruction_error)
 
@@ -45,5 +44,5 @@ def calc_density_and_recon_error(dataloader, model, latent_space_images, height)
 
     stdev_recon_error = np.std(np.array(recon_error_list))
     stdev_density = np.std(np.array(density_list))
-
+    
     return average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list 

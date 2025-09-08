@@ -41,9 +41,8 @@ training_outputs, trained_model = training_loop(epochs=5, data_loader=data_loade
 predictions = eval_loop(model=trained_model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=trained_model, data_loader=data_loaders_anomaly)
 latent_space_predictions = eval_loop(model=trained_model, data_loader=data_loaders, latent_space=True)
-average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list = calc_density_and_recon_error(dataloader=data_loaders, 
-                                                                                                                                       model=trained_model, 
-                                                                                                                                       latent_space_images=latent_space_predictions)
+latent_space_predictions_anomaly = eval_loop(model=trained_model, data_loader=data_loaders_anomaly, latent_space=True)
+
 
 different_heights = np.arange(0.1, 1, 0.1)
 kde_results = {}
@@ -51,11 +50,13 @@ for h in different_heights:
     average_recond_error, average_density, stdev_recon_error, stdev_density, density_list, recon_error_list = calc_density_and_recon_error(dataloader=data_loaders, 
                                                                                                                                        model=trained_model, 
                                                                                                                                        latent_space_images=latent_space_predictions,
-                                                                                                                                       height=h)
+                                                                                                                                       height=h
+                                                                                                                                       )
     average_recond_error_anomaly, average_density_anomaly, stdev_recon_error_anomaly, stdev_density_anomaly, density_list_anomaly, recon_error_list_anomaly = calc_density_and_recon_error(dataloader=data_loaders_anomaly, 
                                                                                                                                                                                            model=trained_model, 
-                                                                                                                                                                                           latent_space_images=latent_space_predictions,
-                                                                                                                                                                                           height=h)
+                                                                                                                                                                                           latent_space_images=latent_space_predictions_anomaly,
+                                                                                                                                                                                           height=h
+                                                                                                                                                                                           )
     
     kde_results[f'height_{h}'] = {'average_recond_error_anomaly': average_recond_error_anomaly,
                                   'average_density_anomaly': average_density_anomaly, 
@@ -63,12 +64,14 @@ for h in different_heights:
                                   'stdev_density_anomaly': stdev_density_anomaly,
                                   'density_list_anomaly': density_list_anomaly, 
                                   'recon_error_list_anomaly': recon_error_list_anomaly,
-                                  'average_recond_error': average_recond_error_anomaly,
-                                  'average_density': average_density_anomaly, 
-                                  'stdev_recon_error': stdev_recon_error_anomaly,
-                                  'stdev_density': stdev_density_anomaly,
-                                  'density_list': density_list_anomaly, 
-                                  'recon_error_list': recon_error_list_anomaly}
+                                  'average_recond_error': average_recond_error,
+                                  'average_density': average_density, 
+                                  'stdev_recon_error': stdev_recon_error,
+                                  'stdev_density': stdev_density,
+                                  'density_list': density_list, 
+                                  'recon_error_list': recon_error_list}
+
+
 
 logging.info(f'average reconstruction error for images: {average_recond_error}' )
 logging.info(f'average reconstruction error for anomalous images: {average_recond_error_anomaly}')
@@ -77,7 +80,7 @@ logging.info(f'average reconstruction error for anomalous images: {average_recon
 correct = 0
 incorrect = 0 
 index = 0
-error_interval = 0.0001
+error_interval = 0.0005
 
 for h in different_heights:
     anomalies_detected = 0
@@ -86,19 +89,24 @@ for h in different_heights:
     normal_image_missed = 0
     # using the average reconstruction error for anomalies you can check whether or not it falls above or below the average error
     for error in kde_results[f'height_{h}']['recon_error_list_anomaly']:
-        print(error, average_recond_error_anomaly)
-        if error >= average_recond_error_anomaly + error_interval:
+        if error >= average_recond_error_anomaly - error_interval:
             anomalies_detected += 1
+            tag = 'anomaly'
         else: 
             anomalies_missed += 1 
+            tag = 'non anomaly'
+
 
     for error in kde_results[f'height_{h}']['recon_error_list']:
-        if error >= average_recond_error_anomaly + error_interval:
+        if error >= average_recond_error_anomaly - error_interval:
+            print(error)
             normal_image_missed += 1 
+            tag = 'not normal'
         else: 
             normal_image_detected += 1
+            tag = 'normal'
 
-    # print(f'-----------------results for height {h}-------------------')
+    print(f'-----------------results for height {h}-------------------')
 
 
     logging.info(f'true positives {normal_image_detected}')
