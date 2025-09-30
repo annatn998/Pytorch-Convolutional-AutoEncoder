@@ -46,7 +46,7 @@ The kernel density is good when you don't have data you can fit to a normal prob
 
 Basically, the process creates a mini-probability distribution for every data point, and then sums them all together at the end to get a better view of the distribution of the data. 
 
-![alt text](image-7.png)
+![alt text](./article_imgs/image-7.png)
 
 Height, is a hyperparameter of the KDE that you can tune and set in the kernel density formula. It determines how narrow and high the probability distribution peak will be at each data point. 
 
@@ -62,11 +62,11 @@ I was interested in this methodology and saw that some people had succeeded with
 ## Dataset Generation --> Introducing Anomalies Detection Using Autoencoders
 I used the https://github.com/google-deepmind/dsprites-dataset and manipulated the sprites to have different background colors so that we can also see how this method works in images with more than just one channel, as previous articles tend to work with only black and white images and most video assets will have 3 channels. 
 
-![alt text](image.png)  ![alt text](image-2.png)
+![alt text](image.png)  ![alt text](./article_imgs/image-2.png)
 
 This set became my ground truth of images, and from there I injected different randomly sized and different colored elipses into the images as potential "anomalies". 
 
-![alt text](image-4.png)
+![alt text](./article_imgs/image-4.png)
 
 ## Preparing the data 
 In pytorch you need to convert the images into tensors to be ingested by the model.
@@ -274,11 +274,11 @@ You can see here that the reconstruction error is larger for the anomoulous data
 
 And the autoencoder struggles to reconstruct the part of the image that holds the anomaly and just  makes it a slightly darker shade of the original image background:
 
-![alt text](image-5.png)
+![alt text](./article_imgs/image-5.png)
 
 However, without the anomaly: 
 
-![alt text](image-6.png)
+![alt text](./article_imgs/image-6.png)
 
 the image is reconstructed well. 
 
@@ -287,7 +287,7 @@ Using this you can set a threshold on the reconstruction error to detect which i
 
 And when we look at the distribution of the reconstruction errors of the base images versus the images with an anomolous object set: 
 
-![alt text](image-11.png)
+![alt text](./article_imgs/image-11.png)
 
 There is a clear distinction between the distribution of reconstruction errors for the anomalous images versus the regular images. However, there is still a noticable overlap  with a couple hundred of anomolous images having a reconstruction less than 0.004, however, the overwhelming majority of images that contain an anomaly have an error over 0.004 making it a useful threshold. 
 
@@ -305,11 +305,11 @@ However, it's interesting that the kernel densities unlike hypothesized, the dis
 
 For example, you can see that the distribution of the pixel values between the original and the anomalous image, after undergoing transformation is extremely similar. Take this image. Which has quite a large anomaly on the image. 
 
-![alt text](image-14.png) ![alt text](image-12.png) ![alt text](image-13.png)
+![alt text](./article_imgs/image-14.png) ![alt text](./article_imgs/image-12.png) ![alt text](./article_imgs/image-13.png)
 
 Then if you take the kde plot of these values, the distributions almost overlap entirely. Meaning that the kernel density estimation will be very similar. Because similar input distributions result in similar kde estimation resulting in a similar kde score. So while there is slight variation, the kernal density estimation is not useful in this scenario. 
 
-![alt text](image-15.png)
+![alt text](./article_imgs/image-15.png)
 
 
 If you'd like to try out this code for yourself checkout my github! 
