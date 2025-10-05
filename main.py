@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO)
 logging.info('loading dataset ....')
 dataset_zip = np.load('./dsprites-dataset/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
 imgs_full = dataset_zip['imgs']
-sample_imgs = random.sample(list(imgs_full), 1000)
+# images are in order of shape so we take a random sample to get various different shapes
+sample_imgs = random.sample(list(imgs_full), 1000) 
 transformed_baseline_imgs = transform_background_colors(sample_imgs)
 anomaly_imgs = np.array([create_anomalous_dataset(i) for i in transformed_baseline_imgs])
 transformed_images = data_transformations(transformed_baseline_imgs)
@@ -37,7 +38,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 logging.info('Training start!')
 
-training_outputs, trained_model = training_loop(epochs=5, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
+training_outputs, trained_model = training_loop(epochs=10, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
 predictions = eval_loop(model=trained_model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=trained_model, data_loader=data_loaders_anomaly)
 latent_space_predictions = eval_loop(model=trained_model, data_loader=data_loaders, latent_space=True)
@@ -98,7 +99,6 @@ for error in kde_results[f'height_{h}']['recon_error_list_anomaly']:
 
 for error in kde_results[f'height_{h}']['recon_error_list']:
     if error >= average_recond_error_anomaly - error_interval:
-        print(error)
         normal_image_missed += 1 
         tag = 'not normal'
     else: 

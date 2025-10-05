@@ -14,10 +14,8 @@ def show_images_grid(imgs, num_images=25, title=None):
     """
 
     if isinstance(imgs[0], torch.Tensor):
-        print(len(imgs))
         imgs = [img[0].detach().cpu().numpy().transpose(1,2,0) for img in imgs]
         
-
     ncols = int(np.ceil(num_images**0.5))
     nrows = int(np.ceil(num_images/ncols))
     _, axes = plt.subplots(nrows, ncols, figsize=(nrows*3, ncols*3))
@@ -31,30 +29,37 @@ def show_images_grid(imgs, num_images=25, title=None):
             else:
                 ax.axis('off')
     else:
-        ax.imshow(imgs[0], cmap='Greys_r', interpolation='nearest')
+        axes.imshow(imgs[0], cmap='Greys_r', interpolation='nearest')
     if title:
-        plt.title(title)
+        plt.title(title, loc='left')
 
 
-def transform_background_colors(imgs):
+
+
+def transform_background_colors(imgs, color=None):
     """
     function: transform background colors
     args:
         imgs (list): images to transform
+        color (str): color to transform
     return: 
         mask (list): transformed images
     """
     mask = np.array([np.zeros((64, 64, 3), dtype=int) for i in range(0, len(imgs) + 1)])
     rbgs = {
-        'dark_pink': [139, 0, 139],
+        'dark_pink': [231, 84, 128],
         'dark_yellow': [139, 139, 0],
         'dark_blue': [0, 0, 139],
-        'dark_green': [0, 100, 0],
-        'black': [0, 0, 0]
+        'dark_green': [0, 100, 0]
     }
 
     for index, img in enumerate(imgs):
-        random_background = random.choice(list(rbgs.values()))
+        if index == 0: 
+            color = 'dark_pink' # set this so that I can use for article each time
+        if not color:
+            random_background = random.choice(list(rbgs.values()))
+        else: 
+            random_background = rbgs[color]
         for index2, im in enumerate(img):
             for index3, imval in enumerate(im):
                 if imval == 0: 
@@ -73,16 +78,15 @@ def create_anomalous_dataset(img, show=False):
         anomalous_img (array): transformed image
     """
     rbgs = {
-        'dark_pink': (139, 0, 139),
-        'dark_yellow': (139, 139, 0),
-        'dark_blue': (0, 0, 139),
-        'dark_green': (0, 100, 0),
-        'black': (0, 0, 0)
+        'light_pink': (255, 182, 193),  
+        'light_yellow': (255, 255, 224),
+        'light_blue': (173, 216, 230),  
+        'light_green': (144, 238, 144), 
     }
     random_y = random.randint(0, 32)
     random_x = random.randint(0, 32)
-    random_dot_radius = random.randint(10,10)
-    random_color = random.choice(['dark_pink', 'dark_yellow', 'dark_blue', 'dark_green', 'black'])
+    random_dot_radius = random.randint(5,5)
+    random_color = random.choice(['light_pink', 'light_yellow', 'light_blue', 'light_green'])
 
     # turn into an image object for easier editing 
     img_pil = Image.fromarray(img.astype(np.uint8)).convert('RGB')

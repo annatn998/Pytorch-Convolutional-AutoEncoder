@@ -60,13 +60,16 @@ I was interested in this methodology and saw that some people had succeeded with
 
 
 ## Dataset Generation --> Introducing Anomalies Detection Using Autoencoders
-I used the https://github.com/google-deepmind/dsprites-dataset and manipulated the sprites to have different background colors so that we can also see how this method works in images with more than just one channel, as previous articles tend to work with only black and white images and most video assets will have 3 channels. 
+I used the https://github.com/google-deepmind/dsprites-dataset and manipulated the sprites to have different background colors so that we can also see how this method works in images with more than just one channel, as previous articles tend to work with only black and white images and most video game assets will have 3 channels. 
 
-![alt text](image.png)  ![alt text](./article_imgs/image-2.png)
+![alt text](image-1.png)
+
+![alt text](image-2.png)
 
 This set became my ground truth of images, and from there I injected different randomly sized and different colored elipses into the images as potential "anomalies". 
 
-![alt text](./article_imgs/image-4.png)
+![alt text](image-3.png)
+
 
 ## Preparing the data 
 In pytorch you need to convert the images into tensors to be ingested by the model.
@@ -155,44 +158,49 @@ H_out = ((64 + 2 * 1 - 1 * (3 - 1) - 1) / 2) + 1
 
 The full shape flow would be:
 
+```
 Input: (N, 3, 64, 64)
 
-→ (N, 16, 32, 32)
+→ Encoder Conv1: (N, 16, 32, 32)
 
-→ (N, 32, 16, 16)
+→ Encoder Conv2: (N, 32, 16, 16)  ← latent vector
 
-→ (N, 64, 8, 8) ← latent vector
+→ Decoder ConvTranspose1: (N, 16, 32, 32)
 
+→ Decoder ConvTranspose2: (N, 3, 64, 64) ← reconstructed input
+```
+
+And here is the AutoEncoder class and how to implement the above encoder & decoder shapes from above. 
 
 ```
 class AutoEncoder(nn.Module):
-    def __init__(self, channels=1):
-        super().__init__()
-        self.channels = channels
-        # runs the layers in order
-        # the first number is what the number of rows should be --> the shape of the image
-        # 2nd number is the shape you want to make it to 
+    def __init__(self, channels):
+        """
+        Args:
+            channels (int): The number of channels in the input image
+
+        Initialize AutoEncoder object, building the encoder and decoder networks
+        """
+        super(AutoEncoder, self).__init__()
+        self.channels = channels 
+
         self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(in_channels=self.channels, out_channels=16, kernel_size=3, padding=1, stride=2),
             nn.ReLU(),
-            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, stride=2, padding=1)
-            nn.ReLU(),
-            nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=2, padding=1)
-            nn.ReLU()
+            nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, padding=1, stride=2),
         )
+
         self.decoder = nn.Sequential(
-            nn.ConvTranspose2d(in_channels=64, out_channels=32, kernel_size=3, padding=1), 
+            nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1),  # 16 -> 32
             nn.ReLU(),
-            nn.ConvTranspose2d(in_channels=32, out_channels=16, kernel_size=3, padding=1), 
-            nn.ReLU(),
-            nn.ConvTranspose2d(in_channels=16, out_channels=self.channels, kernel_size=3, padding=1), 
-            nn.Sigmoid() # because we have multiple channels 
+            nn.ConvTranspose2d(16, self.channels, kernel_size=4, stride=2, padding=1),  # 32 -> 64
+            nn.Sigmoid()
         )
+
 
     def forward(self, x): 
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
-        # print('decoded shape: ', decoded.shape)
         return decoded
     
     def latent_space_image(self, x): 
@@ -274,11 +282,11 @@ You can see here that the reconstruction error is larger for the anomoulous data
 
 And the autoencoder struggles to reconstruct the part of the image that holds the anomaly and just  makes it a slightly darker shade of the original image background:
 
-![alt text](./article_imgs/image-5.png)
+![alt text](image-5.png)
 
-However, without the anomaly: 
+However, without the anomaly the color of the anomaly is not able to be reconstructed well even though the shape exists: 
 
-![alt text](./article_imgs/image-6.png)
+![alt text](image-6.png)
 
 the image is reconstructed well. 
 
@@ -303,13 +311,18 @@ false positive 371
 
 However, it's interesting that the kernel densities unlike hypothesized, the distribution is heavily overlapped. This might be because of the style of images I've chosen to use. Because the distribution of pixels is actually quite similar in the anomalous image versus the original image especially during the reconstruction it could mean that the distribution of the output densities is not actually that different. Interesting to see here that using the kde output might actually impair the results. 
 
-For example, you can see that the distribution of the pixel values between the original and the anomalous image, after undergoing transformation is extremely similar. Take this image. Which has quite a large anomaly on the image. 
+For example, you can see that the distribution of the pixel values between the original and the anomalous image, after undergoing transformation is extremely similar. Take this image. 
 
-![alt text](./article_imgs/image-14.png) ![alt text](./article_imgs/image-12.png) ![alt text](./article_imgs/image-13.png)
+![alt text](image-3.png)
+
+
+Which has quite a large anomaly on the image. 
+
+![alt text](image-7.png)
 
 Then if you take the kde plot of these values, the distributions almost overlap entirely. Meaning that the kernel density estimation will be very similar. Because similar input distributions result in similar kde estimation resulting in a similar kde score. So while there is slight variation, the kernal density estimation is not useful in this scenario. 
 
-![alt text](./article_imgs/image-15.png)
+![alt text](image-4.png)
 
 
 If you'd like to try out this code for yourself checkout my github! 
