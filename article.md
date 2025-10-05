@@ -295,7 +295,7 @@ Using this you can set a threshold on the reconstruction error to detect which i
 
 And when we look at the distribution of the reconstruction errors of the base images versus the images with an anomolous object set: 
 
-![alt text](./article_imgs/image-11.png)
+![alt text](image-8.png)
 
 There is a clear distinction between the distribution of reconstruction errors for the anomalous images versus the regular images. However, there is still a noticable overlap  with a couple hundred of anomolous images having a reconstruction less than 0.004, however, the overwhelming majority of images that contain an anomaly have an error over 0.004 making it a useful threshold. 
 
@@ -304,8 +304,8 @@ So, I can set a threshold using 0.0004 or the average reconstruction error of th
 ```
 true positives 951
 false negatives 50
-true negative 630
-false positive 371
+true negative 670
+false positive 331
 ```
 
 
@@ -322,8 +322,7 @@ Which has quite a large anomaly on the image.
 
 Then if you take the kde plot of these values, the distributions almost overlap entirely. Meaning that the kernel density estimation will be very similar. Because similar input distributions result in similar kde estimation resulting in a similar kde score. So while there is slight variation, the kernal density estimation is not useful in this scenario. 
 
-![alt text](image-4.png)
-
+![alt text](image-9.png)
 
 If you'd like to try out this code for yourself checkout my github! 
 
