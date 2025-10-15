@@ -38,7 +38,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 logging.info('Training start!')
 
-training_outputs, trained_model = training_loop(epochs=10, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
+training_outputs, trained_model = training_loop(epochs=15, data_loader=data_loaders, model=model, criterion=criterion, optimizer=optimizer)
 predictions = eval_loop(model=trained_model, data_loader=data_loaders)
 anomaly_predictions = eval_loop(model=trained_model, data_loader=data_loaders_anomaly)
 latent_space_predictions = eval_loop(model=trained_model, data_loader=data_loaders, latent_space=True)
