@@ -1,6 +1,12 @@
 ## Anomaly Detection in Video Game Sprites with Autoencoders (Pytorch)
 
-Autoencoders are powerful neural networks designed to compress and reconstruct data, making them ideal for unsupervised anomaly detection. This article walks through how autoencoders learn compact image representations via encoding and decoding, how reconstruction error can be used to identify anomalies, and how kernel density estimation (KDE) can be applied to latent space representations. Using a custom dataset of manipulated dSprites and PyTorch, the article explores the relationship between latent space density, reconstruction loss, and visual anomaly detection—revealing where KDE succeeds and where it falls short. 
+Autoencoders are powerful neural networks designed to compress and reconstruct data, but a number of people have found that you can exploit the models' sensitivity to changes in the data for anomaly detection.
+
+Kernel Density Estimation (KDE) has also been proposed as a complementary method for anomaly detection by applying it to the latent space to assess how typical or atypical a representation is.
+
+I wanted to explore this theory on video game sprites, specifically in color images. 
+
+Using a custom dataset of manipulated dSprites and PyTorch, I trained an Autoencoder and applied these techniques to explore their performance in practice.
 
 ## Autoencoders 
 Autoencoders are a type of deep neural network that consists of 3 different architectural components that work together to reconstruct an intial input. 
