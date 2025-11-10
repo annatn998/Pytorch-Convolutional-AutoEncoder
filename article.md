@@ -183,10 +183,9 @@ The "channels" actual represent the number of optimized feature maps returned fr
 class AutoEncoder(nn.Module):
     def __init__(self, channels):
         """
+        Initialize AutoEncoder object, building the encoder and decoder networks
         Args:
             channels (int): The number of channels in the input image
-
-        Initialize AutoEncoder object, building the encoder and decoder networks
         """
         super(AutoEncoder, self).__init__()
         self.channels = channels 
