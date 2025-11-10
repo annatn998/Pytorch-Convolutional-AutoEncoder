@@ -304,9 +304,9 @@ And when we look at the distribution of the reconstruction errors of the base im
 
 ![alt text](./article_imgs/image-8.png)
 
-There is a clear distinction between the distribution of reconstruction errors for the anomalous images versus the regular images. However, there is still a noticable overlap  with a couple hundred of anomolous images having a reconstruction less than 0.004, however, the overwhelming majority of images that contain an anomaly have an error over 0.004 making it a useful threshold. 
+There is a clear distinction between the distribution of reconstruction errors for the anomalous images versus the regular images. However, there is still a noticable overlap  with a couple hundred of anomolous images having a reconstruction less than 0.002, however, the overwhelming majority of images that contain an anomaly have an error over 0.002 making it a useful threshold. 
 
-So, I can set a threshold using 0.0004 or the average reconstruction error of the anomalous set, and then add an ```error_interval``` which can be a hyperparameter to tune. You can see that for the anomaly detection, we get a very good classification rate for true positives. You still get quite a high number of false positives because you can see there is still an overlap below 0.002 where the reconstruction error is the same for both anomalies and normal images. A more complex auto-encoder might be able to allow for a more finite separation.
+So, I can set a threshold using 0.002 or the average reconstruction error of the anomalous set, and then add an ```error_interval``` which can be a hyperparameter to tune. You can see that for the anomaly detection, we get a very good classification rate for true positives. You still get quite a high number of false positives because you can see there is still an overlap below 0.002 where the reconstruction error is the same for both anomalies and normal images. A more complex auto-encoder might be able to allow for a more finite separation.
 
 ```
 true positives 951
@@ -341,4 +341,3 @@ If you'd like to try out this code for yourself checkout my github!
 # Bibliography 
 - kernel density estimation: https://blogs.sas.com/content/iml/2016/07/27/visualize-kernel-density-estimate.html
 - pytorch Conv2D: https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.
-- 
