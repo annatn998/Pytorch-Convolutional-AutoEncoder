@@ -283,7 +283,7 @@ with torch.no_grad():
 ```
 
 The average reconstruction error for actual images is 
-0.0002 whereas the reconstruction error for the anomalous set of images is slightly higher at 0.0004.
+0.002 whereas the reconstruction error for the anomalous set of images is slightly higher at 0.004.
 
 You can see here that the reconstruction error is larger for the anomoulous dataset compared to the ground truth images that the autoencoder was trained on. 
 
